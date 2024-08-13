@@ -27,3 +27,6 @@ data
 .DS_Store
 *.pem
 
+# prof files
+cpu.prof
+mem.prof
