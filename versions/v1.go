@@ -30,13 +30,13 @@ func ReadFileLineByLine(path string) {
 			cityStat.Min = math.Min(cityStat.Min, temp.Temperature)
 			cityStat.Max = math.Max(cityStat.Max, temp.Temperature)
 			cityStat.Visited++
-			cityStat.Mean = cityStat.Mean + (temp.Temperature-cityStat.Mean)/float64(cityStat.Visited)
+			cityStat.Sum += temp.Temperature
 			stats[temp.City] = cityStat
 		} else {
 			stats[temp.City] = types.Result{
 				Min:     temp.Temperature,
 				Max:     temp.Temperature,
-				Mean:    temp.Temperature,
+				Sum:     temp.Temperature,
 				Visited: 1,
 			}
 		}
@@ -50,7 +50,7 @@ func ReadFileLineByLine(path string) {
 	// log stats for each city
 	for city, stat := range stats {
 		log.Printf("City: %s, Min: %.2f, Max: %.2f, Mean: %.2f, Visited: %d\n",
-			city, stat.Min, stat.Max, stat.Mean, stat.Visited)
+			city, stat.Min, stat.Max, stat.Sum/float64(stat.Visited), stat.Visited)
 	}
 }
 

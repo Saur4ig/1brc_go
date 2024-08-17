@@ -21,7 +21,7 @@ func ReadFileLineByLineV2(path string) {
 	defer file.Close()
 
 	buffer := make([]byte, BUFFER_SIZE)
-	stats := make(map[string]types.Result)
+	stats := make(map[string]*types.Result)
 	var line []byte
 	for {
 		n, err := file.Read(buffer)
@@ -47,13 +47,12 @@ func ReadFileLineByLineV2(path string) {
 					cityStat.Min = math.Min(cityStat.Min, secondPartFloat)
 					cityStat.Max = math.Max(cityStat.Max, secondPartFloat)
 					cityStat.Visited++
-					cityStat.Mean = cityStat.Mean + (secondPartFloat-cityStat.Mean)/float64(cityStat.Visited)
-					stats[station] = cityStat
+					cityStat.Sum += secondPartFloat
 				} else {
-					stats[station] = types.Result{
+					stats[station] = &types.Result{
 						Min:     secondPartFloat,
 						Max:     secondPartFloat,
-						Mean:    secondPartFloat,
+						Sum:     secondPartFloat,
 						Visited: 1,
 					}
 				}
@@ -68,6 +67,6 @@ func ReadFileLineByLineV2(path string) {
 	// log stats for each city
 	for city, stat := range stats {
 		log.Printf("City: %s, Min: %.2f, Max: %.2f, Mean: %.2f, Visited: %d\n",
-			city, stat.Min, stat.Max, stat.Mean, stat.Visited)
+			city, stat.Min, stat.Max, stat.Sum/float64(stat.Visited), stat.Visited)
 	}
 }

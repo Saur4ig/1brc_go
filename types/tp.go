@@ -8,6 +8,6 @@ type TempData struct {
 type Result struct {
 	Min     float64
 	Max     float64
-	Mean    float64
+	Sum     float64
 	Visited int
 }
