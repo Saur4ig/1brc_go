@@ -22,7 +22,7 @@ func main() {
 	defer pprof.StopCPUProfile()
 
 	// read the file and process data
-	versions.ReadFileLineByLine(path)
+	versions.ReadFileLineByLineV2(path)
 
 	// capture memory profile.
 	writeMemoryProfile(memProfile)

@@ -1,4 +1,4 @@
-.PHONY: run cpu mem
+.PHONY: run cpu mem server
 
 run:
 	go run main.go
@@ -8,3 +8,7 @@ cpu:
 
 mem:
 	go tool pprof mem.prof
+
+
+server:
+	go tool pprof -http 127.0.0.1:8080 cpu.prof

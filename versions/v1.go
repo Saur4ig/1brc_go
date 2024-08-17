@@ -27,10 +27,10 @@ func ReadFileLineByLine(path string) {
 	for sc.Scan() {
 		temp := decodeLine(sc.Bytes())
 		if cityStat, ok := stats[temp.City]; ok {
-			cityStat.Min = float32(math.Min(float64(cityStat.Min), float64(temp.Temperature)))
-			cityStat.Max = float32(math.Max(float64(cityStat.Max), float64(temp.Temperature)))
+			cityStat.Min = math.Min(cityStat.Min, temp.Temperature)
+			cityStat.Max = math.Max(cityStat.Max, temp.Temperature)
 			cityStat.Visited++
-			cityStat.Mean = cityStat.Mean + (temp.Temperature-cityStat.Mean)/float32(cityStat.Visited)
+			cityStat.Mean = cityStat.Mean + (temp.Temperature-cityStat.Mean)/float64(cityStat.Visited)
 			stats[temp.City] = cityStat
 		} else {
 			stats[temp.City] = types.Result{
@@ -60,6 +60,6 @@ func decodeLine(line []byte) types.TempData {
 	temperature, _ := strconv.ParseFloat(strings.TrimSpace(parts[1]), 32)
 	return types.TempData{
 		City:        parts[0],
-		Temperature: float32(temperature),
+		Temperature: temperature,
 	}
 }

@@ -2,12 +2,12 @@ package types
 
 type TempData struct {
 	City        string
-	Temperature float32
+	Temperature float64
 }
 
 type Result struct {
-	Min     float32
-	Max     float32
-	Mean    float32
+	Min     float64
+	Max     float64
+	Mean    float64
 	Visited int
 }

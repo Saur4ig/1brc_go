@@ -10,3 +10,7 @@ My attempt to solve the **One Billion Row Challenge**.
 ### v1.1
 - **Time**: Total: 370.11s
 - **Logic**: added buffer size to scanner
+
+### v2
+- **Time**: Total: 329.07s
+- **Logic**: added decode logic using bytes.IndexByte, looping - using buffer
