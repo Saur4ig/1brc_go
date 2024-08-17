@@ -18,3 +18,7 @@ My attempt to solve the **One Billion Row Challenge**.
 ### v2.1
 - **Time**: Total: 308.56s
 - **Logic**: pointer instead of value for result map
+
+### v2.2
+- **Time**: Total: 244.13s,
+- **Logic**: replaced float parsing with custom function

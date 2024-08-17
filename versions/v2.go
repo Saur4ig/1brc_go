@@ -6,7 +6,6 @@ import (
 	"log"
 	"math"
 	"os"
-	"strconv"
 
 	"github.com/Saur4ig/1brc_go/types"
 )
@@ -42,7 +41,7 @@ func ReadFileLineByLineV2(path string) {
 					continue
 				}
 				station := string(line[:sepIndex])
-				secondPartFloat, _ := strconv.ParseFloat(string(line[sepIndex+1:]), 64)
+				secondPartFloat := parseTemp(line[sepIndex+1:])
 				if cityStat, ok := stats[station]; ok {
 					cityStat.Min = math.Min(cityStat.Min, secondPartFloat)
 					cityStat.Max = math.Max(cityStat.Max, secondPartFloat)
@@ -69,4 +68,30 @@ func ReadFileLineByLineV2(path string) {
 		log.Printf("City: %s, Min: %.2f, Max: %.2f, Mean: %.2f, Visited: %d\n",
 			city, stat.Min, stat.Max, stat.Sum/float64(stat.Visited), stat.Visited)
 	}
+}
+
+func parseTemp(bytes []byte) float64 {
+	index := 0
+	negative := false
+
+	if bytes[index] == '-' {
+		negative = true
+		index++
+	}
+
+	temp := float64(bytes[index] - '0')
+	index++
+	if bytes[index] != '.' {
+		temp = temp*10 + float64(bytes[index]-'0')
+		index++
+	}
+
+	index++ // skip the '.'
+	temp += float64(bytes[index]-'0') * 0.1
+
+	if negative {
+		temp = -temp
+	}
+
+	return temp
 }
