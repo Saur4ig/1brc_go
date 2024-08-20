@@ -11,3 +11,8 @@ type Result struct {
 	Sum     float64
 	Visited int
 }
+
+type Temperature struct {
+	Station string
+	Temp    float64
+}

@@ -71,6 +71,10 @@ func ReadFileLineByLineV2(path string) {
 }
 
 func parseTemp(bytes []byte) float64 {
+	if len(bytes) == 0 {
+		return 0
+	}
+
 	index := 0
 	negative := false
 
@@ -79,15 +83,21 @@ func parseTemp(bytes []byte) float64 {
 		index++
 	}
 
+	if index >= len(bytes) {
+		return 0
+	}
+
 	temp := float64(bytes[index] - '0')
 	index++
-	if bytes[index] != '.' {
+	if index < len(bytes) && bytes[index] != '.' {
 		temp = temp*10 + float64(bytes[index]-'0')
 		index++
 	}
 
-	index++ // skip the '.'
-	temp += float64(bytes[index]-'0') * 0.1
+	if index+1 < len(bytes) && bytes[index] == '.' {
+		index++ // skip the '.'
+		temp += float64(bytes[index]-'0') * 0.1
+	}
 
 	if negative {
 		temp = -temp

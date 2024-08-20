@@ -20,5 +20,9 @@ My attempt to solve the **One Billion Row Challenge**.
 - **Logic**: pointer instead of value for result map
 
 ### v2.2
-- **Time**: Total: 244.13s,
+- **Time**: Total: 244.13s
 - **Logic**: replaced float parsing with custom function
+
+### v3
+- **Time**: Total: 58.30s
+- **Logic**: parallel processing of files, but with scanner and maps merging
