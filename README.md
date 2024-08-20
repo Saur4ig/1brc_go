@@ -36,5 +36,9 @@ My attempt to solve the **One Billion Row Challenge**.
 - **Logic**: added capacity to the line slice, avoiding slice grow
 
 ### v3.3
-- **Time**: Total: 15.48ss
+- **Time**: Total: 20.32s
 - **Logic**: replaced convert to string with fast string
+
+### v3.4
+- **Time**: Total: 18.57s
+- **Logic**: instead of re-writing max or min each time, now rewrite only on change

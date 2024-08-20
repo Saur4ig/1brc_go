@@ -116,8 +116,12 @@ func processLine(line []byte, stats map[string]*types.Result) {
 	secondPartFloat := parseTemp(line[sepIndex+1:])
 
 	if cityStat, ok := stats[station]; ok {
-		cityStat.Min = math.Min(cityStat.Min, secondPartFloat)
-		cityStat.Max = math.Max(cityStat.Max, secondPartFloat)
+		if secondPartFloat < cityStat.Min {
+			cityStat.Min = secondPartFloat
+		}
+		if secondPartFloat > cityStat.Max {
+			cityStat.Max = secondPartFloat
+		}
 		cityStat.Visited++
 		cityStat.Sum += secondPartFloat
 	} else {
