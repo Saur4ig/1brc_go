@@ -2,13 +2,12 @@ package versions
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"io"
 	"log"
 	"math"
 	"os"
-	"strconv"
-	"strings"
 
 	"github.com/Saur4ig/1brc_go/types"
 )
@@ -23,7 +22,7 @@ type chunk struct {
 func ProcessParallelV1(path string) {
 	chunks := parallelFile(path)
 
-	resultsChan := make(chan map[string]*types.Result)
+	resultsChan := make(chan map[string]*types.Result, WORKER_COUNT)
 	log.Println(chunks)
 
 	for _, chunk := range chunks {
@@ -54,7 +53,7 @@ func ProcessParallelV1(path string) {
 
 	for station, data := range results {
 		mean := data.Sum / float64(data.Visited)
-		fmt.Printf("%s=%.1f/%.1f/%.1f", station, data.Min, mean, data.Max)
+		fmt.Printf("%s=%.1f/%.1f/%.1f\n", station, data.Min, mean, data.Max)
 	}
 }
 
@@ -73,34 +72,60 @@ func part(path string, offset, size int64, res chan map[string]*types.Result) {
 
 	stats := make(map[string]*types.Result)
 
-	scanner := bufio.NewScanner(&f)
-	for scanner.Scan() {
-		line := scanner.Text()
-		station, tempStr, hasSemi := strings.Cut(line, ";")
-		if !hasSemi || tempStr == "" {
-			continue
-		}
+	buffer := make([]byte, BUFFER_SIZE)
+	var line []byte
 
-		secondPartFloat, err := strconv.ParseFloat(tempStr, 64)
-		if err != nil {
+	for {
+		n, err := f.Read(buffer)
+		if err != nil && err != io.EOF {
 			panic(err)
 		}
-		if cityStat, ok := stats[station]; ok {
-			cityStat.Min = math.Min(cityStat.Min, secondPartFloat)
-			cityStat.Max = math.Max(cityStat.Max, secondPartFloat)
-			cityStat.Visited++
-			cityStat.Sum += secondPartFloat
-		} else {
-			stats[station] = &types.Result{
-				Min:     secondPartFloat,
-				Max:     secondPartFloat,
-				Sum:     secondPartFloat,
-				Visited: 1,
+
+		start := 0
+		for i := 0; i < n; i++ {
+			if buffer[i] == '\n' {
+				line = append(line, buffer[start:i]...)
+				processLine(line, stats)
+				line = nil
+				start = i + 1
 			}
+		}
+		if start < n {
+			line = append(line, buffer[start:n]...)
+		}
+
+		if err == io.EOF {
+			if len(line) > 0 {
+				processLine(line, stats)
+			}
+			break
 		}
 	}
 
 	res <- stats
+}
+
+func processLine(line []byte, stats map[string]*types.Result) {
+	sepIndex := bytes.IndexByte(line, ';')
+	if sepIndex == -1 {
+		return
+	}
+	station := string(line[:sepIndex])
+	secondPartFloat := parseTemp(line[sepIndex+1:])
+
+	if cityStat, ok := stats[station]; ok {
+		cityStat.Min = math.Min(cityStat.Min, secondPartFloat)
+		cityStat.Max = math.Max(cityStat.Max, secondPartFloat)
+		cityStat.Visited++
+		cityStat.Sum += secondPartFloat
+	} else {
+		stats[station] = &types.Result{
+			Min:     secondPartFloat,
+			Max:     secondPartFloat,
+			Sum:     secondPartFloat,
+			Visited: 1,
+		}
+	}
 }
 
 func parallelFile(path string) []chunk {

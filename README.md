@@ -26,3 +26,7 @@ My attempt to solve the **One Billion Row Challenge**.
 ### v3
 - **Time**: Total: 58.30s
 - **Logic**: parallel processing of files, but with scanner and maps merging
+
+### v3.1
+- **Time**: Total: 32.77s
+- **Logic**: replaced bufio scanner with faster implementation from v2
