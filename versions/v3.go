@@ -115,23 +115,25 @@ func processLine(line []byte, stats map[string]*types.Result) {
 	station := fastString(line[:sepIndex])
 	secondPartFloat := parseTemp(line[sepIndex+1:])
 
-	if cityStat, ok := stats[station]; ok {
-		if secondPartFloat < cityStat.Min {
-			cityStat.Min = secondPartFloat
-		}
-		if secondPartFloat > cityStat.Max {
-			cityStat.Max = secondPartFloat
-		}
-		cityStat.Visited++
-		cityStat.Sum += secondPartFloat
-	} else {
+	cityStat, ok := stats[station]
+	if !ok {
 		stats[station] = &types.Result{
 			Min:     secondPartFloat,
 			Max:     secondPartFloat,
 			Sum:     secondPartFloat,
 			Visited: 1,
 		}
+		return
 	}
+
+	if secondPartFloat < cityStat.Min {
+		cityStat.Min = secondPartFloat
+	}
+	if secondPartFloat > cityStat.Max {
+		cityStat.Max = secondPartFloat
+	}
+	cityStat.Visited++
+	cityStat.Sum += secondPartFloat
 }
 
 func parallelFile(path string) []chunk {

@@ -42,3 +42,7 @@ My attempt to solve the **One Billion Row Challenge**.
 ### v3.4
 - **Time**: Total: 18.57s
 - **Logic**: instead of re-writing max or min each time, now rewrite only on change
+
+### v3.5
+- **Time**: Total: 15.22s
+- **Logic**: reduced amount of interactions with the map
