@@ -46,3 +46,7 @@ My attempt to solve the **One Billion Row Challenge**.
 ### v3.5
 - **Time**: Total: 15.22s
 - **Logic**: reduced amount of interactions with the map
+
+### v3.6
+- **Time**: Total: 13.79s
+- **Logic**: added map capacity, to reduce the alloc time

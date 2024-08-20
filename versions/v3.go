@@ -15,6 +15,7 @@ import (
 
 const WORKER_COUNT = 16
 const MAX_LINE_LEN = 100 // in bytes
+const APPROX_STATIONS_AMOUNT = 4300
 
 type chunk struct {
 	start int64
@@ -31,7 +32,7 @@ func ProcessParallelV1(path string) {
 		go part(path, chunk.start, chunk.size, resultsChan)
 	}
 
-	results := make(map[string]*types.Result)
+	results := make(map[string]*types.Result, APPROX_STATIONS_AMOUNT)
 
 	for i := 0; i < len(chunks); i++ {
 		result := <-resultsChan
@@ -72,7 +73,7 @@ func part(path string, offset, size int64, res chan map[string]*types.Result) {
 	}
 	f := io.LimitedReader{R: file, N: size}
 
-	stats := make(map[string]*types.Result)
+	stats := make(map[string]*types.Result, APPROX_STATIONS_AMOUNT)
 
 	buffer := make([]byte, BUFFER_SIZE)
 	line := make([]byte, 0, MAX_LINE_LEN)
