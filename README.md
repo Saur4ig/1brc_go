@@ -30,3 +30,7 @@ My attempt to solve the **One Billion Row Challenge**.
 ### v3.1
 - **Time**: Total: 32.77s
 - **Logic**: replaced bufio scanner with faster implementation from v2
+
+### v3.2
+- **Time**: Total: 23.92s
+- **Logic**: added capacity to the line slice, avoiding slice grow

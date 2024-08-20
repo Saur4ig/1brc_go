@@ -13,6 +13,7 @@ import (
 )
 
 const WORKER_COUNT = 16
+const MAX_LINE_LEN = 100 // in bytes
 
 type chunk struct {
 	start int64
@@ -73,7 +74,7 @@ func part(path string, offset, size int64, res chan map[string]*types.Result) {
 	stats := make(map[string]*types.Result)
 
 	buffer := make([]byte, BUFFER_SIZE)
-	var line []byte
+	line := make([]byte, 0, MAX_LINE_LEN)
 
 	for {
 		n, err := f.Read(buffer)
@@ -86,7 +87,7 @@ func part(path string, offset, size int64, res chan map[string]*types.Result) {
 			if buffer[i] == '\n' {
 				line = append(line, buffer[start:i]...)
 				processLine(line, stats)
-				line = nil
+				line = line[:0]
 				start = i + 1
 			}
 		}
