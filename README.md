@@ -34,3 +34,7 @@ My attempt to solve the **One Billion Row Challenge**.
 ### v3.2
 - **Time**: Total: 23.92s
 - **Logic**: added capacity to the line slice, avoiding slice grow
+
+### v3.3
+- **Time**: Total: 15.48ss
+- **Logic**: replaced convert to string with fast string

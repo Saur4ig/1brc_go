@@ -8,6 +8,7 @@ import (
 	"log"
 	"math"
 	"os"
+	"unsafe"
 
 	"github.com/Saur4ig/1brc_go/types"
 )
@@ -111,7 +112,7 @@ func processLine(line []byte, stats map[string]*types.Result) {
 	if sepIndex == -1 {
 		return
 	}
-	station := string(line[:sepIndex])
+	station := fastString(line[:sepIndex])
 	secondPartFloat := parseTemp(line[sepIndex+1:])
 
 	if cityStat, ok := stats[station]; ok {
@@ -178,4 +179,8 @@ func adjustOffset(file *os.File, limit int64) int64 {
 	}
 
 	return offset
+}
+
+func fastString(b []byte) string {
+	return *(*string)(unsafe.Pointer(&b))
 }
