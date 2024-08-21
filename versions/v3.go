@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"math"
 	"os"
 	"unsafe"
 
@@ -39,8 +38,12 @@ func ProcessParallelV1(path string) {
 		for station, s := range result {
 			resSt, ok := results[station]
 			if ok {
-				resSt.Min = math.Min(resSt.Min, s.Min)
-				resSt.Max = math.Max(resSt.Max, s.Max)
+				if resSt.Min > s.Min {
+					resSt.Min = s.Min
+				}
+				if s.Max > resSt.Max {
+					resSt.Max = s.Max
+				}
 				resSt.Visited += s.Visited
 				resSt.Sum += s.Sum
 			} else {
@@ -127,7 +130,7 @@ func processLine(line []byte, stats map[string]*types.Result) {
 		return
 	}
 
-	if secondPartFloat < cityStat.Min {
+	if cityStat.Min > secondPartFloat {
 		cityStat.Min = secondPartFloat
 	}
 	if secondPartFloat > cityStat.Max {
