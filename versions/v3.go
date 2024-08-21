@@ -195,7 +195,7 @@ func fastString(b []byte) string {
 
 // semicolon is more close to the right side, it is faster to search from the right side
 func getSemiColIndex(line []byte) int {
-	for i := len(line) - 1; i >= 0; i-- {
+	for i := len(line) - 4; i >= 0; i-- {
 		if line[i] == ';' {
 			return i
 		}

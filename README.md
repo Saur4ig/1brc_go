@@ -57,4 +57,8 @@ My attempt to solve the **One Billion Row Challenge**.
 
 ### v3.8
 - **Time**: Total: 13.12s
-- **Logic**: custom semicolon search function, searching it from the right side 
+- **Logic**: custom semicolon search function, searching it from the right side
+
+### v3.9
+- **Time**: Total: 12.47
+- **Logic**: reduced amount of iterations by 3 for semicolon search 
