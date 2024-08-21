@@ -2,7 +2,6 @@ package versions
 
 import (
 	"bufio"
-	"bytes"
 	"fmt"
 	"io"
 	"log"
@@ -112,7 +111,7 @@ func part(path string, offset, size int64, res chan map[string]*types.Result) {
 }
 
 func processLine(line []byte, stats map[string]*types.Result) {
-	sepIndex := bytes.IndexByte(line, ';')
+	sepIndex := getSemiColIndex(line)
 	if sepIndex == -1 {
 		return
 	}
@@ -192,4 +191,14 @@ func adjustOffset(file *os.File, limit int64) int64 {
 
 func fastString(b []byte) string {
 	return *(*string)(unsafe.Pointer(&b))
+}
+
+// semicolon is more close to the right side, it is faster to search from the right side
+func getSemiColIndex(line []byte) int {
+	for i := len(line) - 1; i >= 0; i-- {
+		if line[i] == ';' {
+			return i
+		}
+	}
+	return -1
 }

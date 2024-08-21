@@ -54,3 +54,7 @@ My attempt to solve the **One Billion Row Challenge**.
 ### v3.7
 - **Time**: Total: 14.00s
 - **Logic**: refactored map insertion logic, to reduce amount of allocations
+
+### v3.8
+- **Time**: Total: 13.12s
+- **Logic**: custom semicolon search function, searching it from the right side 
