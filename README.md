@@ -50,3 +50,7 @@ My attempt to solve the **One Billion Row Challenge**.
 ### v3.6
 - **Time**: Total: 15.00s
 - **Logic**: added map capacity, to reduce the alloc time
+
+### v3.7
+- **Time**: Total: 14.00s
+- **Logic**: refactored map insertion logic, to reduce amount of allocations
