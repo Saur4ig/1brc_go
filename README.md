@@ -70,3 +70,7 @@ My attempt to solve the **One Billion Row Challenge**.
 ### v3.11
 - **Time**: Total: 11.03
 - **Logic**: a bit faster hash func
+
+### v3.12
+- **Time**: Total: 10.95
+- **Logic**: faster hash
