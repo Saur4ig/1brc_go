@@ -22,14 +22,14 @@ type chunk struct {
 func ProcessParallelV1(path string) {
 	chunks := parallelFile(path)
 
-	resultsChan := make(chan map[uint64]*types.Result, WORKER_COUNT)
+	resultsChan := make(chan map[uint64]*types.Res, WORKER_COUNT)
 	log.Println(chunks)
 
 	for _, chunk := range chunks {
 		go part(path, chunk.start, chunk.size, resultsChan)
 	}
 
-	results := make(map[uint64]*types.Result, APPROX_STATIONS_AMOUNT)
+	results := make(map[uint64]*types.Res, APPROX_STATIONS_AMOUNT)
 
 	for i := 0; i < len(chunks); i++ {
 		result := <-resultsChan
@@ -45,7 +45,7 @@ func ProcessParallelV1(path string) {
 				resSt.Visited += s.Visited
 				resSt.Sum += s.Sum
 			} else {
-				results[station] = &types.Result{
+				results[station] = &types.Res{
 					Min:     s.Min,
 					Max:     s.Max,
 					Sum:     s.Sum,
@@ -57,12 +57,12 @@ func ProcessParallelV1(path string) {
 	}
 
 	for _, data := range results {
-		mean := data.Sum / float64(data.Visited)
-		fmt.Printf("%s=%.1f/%.1f/%.1f\n", data.Station, data.Min, mean, data.Max)
+		mean := data.Sum / int64(data.Visited)
+		fmt.Printf("%s=%.1f/%.1f/%.1f\n", data.Station, float64(data.Min)/10, float64(mean)/10, float64(data.Max)/10)
 	}
 }
 
-func part(path string, offset, size int64, res chan map[uint64]*types.Result) {
+func part(path string, offset, size int64, res chan map[uint64]*types.Res) {
 	file, err := os.OpenFile(path, os.O_RDONLY, os.ModePerm)
 	if err != nil {
 		panic(err)
@@ -75,7 +75,7 @@ func part(path string, offset, size int64, res chan map[uint64]*types.Result) {
 	}
 	f := io.LimitedReader{R: file, N: size}
 
-	stats := make(map[uint64]*types.Result, APPROX_STATIONS_AMOUNT)
+	stats := make(map[uint64]*types.Res, APPROX_STATIONS_AMOUNT)
 
 	buffer := make([]byte, BUFFER_SIZE)
 	line := make([]byte, 0, MAX_LINE_LEN)
@@ -110,30 +110,30 @@ func part(path string, offset, size int64, res chan map[uint64]*types.Result) {
 	res <- stats
 }
 
-func processLine(line []byte, stats map[uint64]*types.Result) {
+func processLine(line []byte, stats map[uint64]*types.Res) {
 	sepIndex := getSemiColIndex(line)
 	if sepIndex == -1 {
 		return
 	}
 	station := hash(line[:sepIndex])
-	secondPartFloat := parseTemp(line[sepIndex+1:])
+	temperature := parseToInt(line[sepIndex+1:])
 
 	if cityStat, ok := stats[station]; ok {
-		if cityStat.Min > secondPartFloat {
-			cityStat.Min = secondPartFloat
+		if cityStat.Min > temperature {
+			cityStat.Min = temperature
 		}
-		if secondPartFloat > cityStat.Max {
-			cityStat.Max = secondPartFloat
+		if temperature > cityStat.Max {
+			cityStat.Max = temperature
 		}
 		cityStat.Visited++
-		cityStat.Sum += secondPartFloat
+		cityStat.Sum += temperature
 		return
 	}
 
-	stats[station] = &types.Result{
-		Min:     secondPartFloat,
-		Max:     secondPartFloat,
-		Sum:     secondPartFloat,
+	stats[station] = &types.Res{
+		Min:     temperature,
+		Max:     temperature,
+		Sum:     temperature,
 		Station: string(line[:sepIndex]),
 		Visited: 1,
 	}
@@ -207,4 +207,40 @@ func hash(b []byte) uint64 {
 		h = (h << 8) | uint64(b[i])
 	}
 	return h
+}
+
+func parseToInt(bytes []byte) int64 {
+	if len(bytes) == 0 {
+		return 0
+	}
+
+	index := 0
+	negative := false
+
+	if bytes[index] == '-' {
+		negative = true
+		index++
+	}
+
+	if index >= len(bytes) {
+		return 0
+	}
+
+	temp := int64(bytes[index] - '0')
+	index++
+	if index < len(bytes) && bytes[index] != '.' {
+		temp = temp*10 + int64(bytes[index]-'0')
+		index++
+	}
+
+	if index+1 < len(bytes) && bytes[index] == '.' {
+		index++ // skip the '.'
+		temp = temp*10 + int64(bytes[index]-'0')
+	}
+
+	if negative {
+		temp = -temp
+	}
+
+	return temp
 }

@@ -17,3 +17,11 @@ type Temperature struct {
 	Station string
 	Temp    float64
 }
+
+type Res struct {
+	Min     int64
+	Max     int64
+	Sum     int64
+	Station string
+	Visited int32
+}
