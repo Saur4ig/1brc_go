@@ -202,14 +202,9 @@ func getSemiColIndex(line []byte) int {
 
 // create a hash from bytes
 func hash(b []byte) uint64 {
-	limit := len(b)
-	if limit > 8 {
-		limit = 8
+	h := uint64(0)
+	for i := 0; i < len(b) && i < 8; i++ {
+		h = h*31 + uint64(b[i])
 	}
-
-	var x uint64
-	for i := 0; i < limit; i++ {
-		x = x<<8 + uint64(b[i])
-	}
-	return x
+	return h
 }
