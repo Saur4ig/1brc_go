@@ -74,3 +74,7 @@ My attempt to solve the **One Billion Row Challenge**.
 ### v3.12
 - **Time**: Total: 10.95
 - **Logic**: faster hash
+
+### v3.13
+- **Time**: Total: 10.28
+- **Logic**: replaced float64 with int64 for faster operations 
