@@ -11,8 +11,8 @@ import (
 )
 
 const WORKER_COUNT = 16
-const MAX_LINE_LEN = 100 // in bytes
-const APPROX_STATIONS_AMOUNT = 4300
+const MAX_LINE_LEN = 70 // in bytes
+const APPROX_STATIONS_AMOUNT = 4400
 
 type chunk struct {
 	start int64

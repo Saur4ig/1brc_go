@@ -78,3 +78,7 @@ My attempt to solve the **One Billion Row Challenge**.
 ### v3.13
 - **Time**: Total: 10.28
 - **Logic**: replaced float64 with int64 for faster operations 
+
+### v3.14
+- **Time**: Total: 9.66
+- **Logic**: adjusted const limits
