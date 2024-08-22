@@ -61,4 +61,8 @@ My attempt to solve the **One Billion Row Challenge**.
 
 ### v3.9
 - **Time**: Total: 12.47
-- **Logic**: reduced amount of iterations by 3 for semicolon search 
+- **Logic**: reduced amount of iterations by 3 for semicolon search
+
+### v3.10
+- **Time**: Total: 11.08
+- **Logic**: instead of converting []bytes to string all the time(quite expensive), moved to uint64 as a key in map

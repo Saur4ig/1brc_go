@@ -6,7 +6,6 @@ import (
 	"io"
 	"log"
 	"os"
-	"unsafe"
 
 	"github.com/Saur4ig/1brc_go/types"
 )
@@ -23,14 +22,14 @@ type chunk struct {
 func ProcessParallelV1(path string) {
 	chunks := parallelFile(path)
 
-	resultsChan := make(chan map[string]*types.Result, WORKER_COUNT)
+	resultsChan := make(chan map[uint64]*types.Result, WORKER_COUNT)
 	log.Println(chunks)
 
 	for _, chunk := range chunks {
 		go part(path, chunk.start, chunk.size, resultsChan)
 	}
 
-	results := make(map[string]*types.Result, APPROX_STATIONS_AMOUNT)
+	results := make(map[uint64]*types.Result, APPROX_STATIONS_AMOUNT)
 
 	for i := 0; i < len(chunks); i++ {
 		result := <-resultsChan
@@ -51,18 +50,19 @@ func ProcessParallelV1(path string) {
 					Max:     s.Max,
 					Sum:     s.Sum,
 					Visited: s.Visited,
+					Station: s.Station,
 				}
 			}
 		}
 	}
 
-	for station, data := range results {
+	for _, data := range results {
 		mean := data.Sum / float64(data.Visited)
-		fmt.Printf("%s=%.1f/%.1f/%.1f\n", station, data.Min, mean, data.Max)
+		fmt.Printf("%s=%.1f/%.1f/%.1f\n", data.Station, data.Min, mean, data.Max)
 	}
 }
 
-func part(path string, offset, size int64, res chan map[string]*types.Result) {
+func part(path string, offset, size int64, res chan map[uint64]*types.Result) {
 	file, err := os.OpenFile(path, os.O_RDONLY, os.ModePerm)
 	if err != nil {
 		panic(err)
@@ -75,7 +75,7 @@ func part(path string, offset, size int64, res chan map[string]*types.Result) {
 	}
 	f := io.LimitedReader{R: file, N: size}
 
-	stats := make(map[string]*types.Result, APPROX_STATIONS_AMOUNT)
+	stats := make(map[uint64]*types.Result, APPROX_STATIONS_AMOUNT)
 
 	buffer := make([]byte, BUFFER_SIZE)
 	line := make([]byte, 0, MAX_LINE_LEN)
@@ -110,12 +110,12 @@ func part(path string, offset, size int64, res chan map[string]*types.Result) {
 	res <- stats
 }
 
-func processLine(line []byte, stats map[string]*types.Result) {
+func processLine(line []byte, stats map[uint64]*types.Result) {
 	sepIndex := getSemiColIndex(line)
 	if sepIndex == -1 {
 		return
 	}
-	station := fastString(line[:sepIndex])
+	station := hash(line[:sepIndex])
 	secondPartFloat := parseTemp(line[sepIndex+1:])
 
 	if cityStat, ok := stats[station]; ok {
@@ -134,6 +134,7 @@ func processLine(line []byte, stats map[string]*types.Result) {
 		Min:     secondPartFloat,
 		Max:     secondPartFloat,
 		Sum:     secondPartFloat,
+		Station: string(line[:sepIndex]),
 		Visited: 1,
 	}
 }
@@ -189,10 +190,6 @@ func adjustOffset(file *os.File, limit int64) int64 {
 	return offset
 }
 
-func fastString(b []byte) string {
-	return *(*string)(unsafe.Pointer(&b))
-}
-
 // semicolon is more close to the right side, it is faster to search from the right side
 func getSemiColIndex(line []byte) int {
 	for i := len(line) - 4; i >= 0; i-- {
@@ -201,4 +198,18 @@ func getSemiColIndex(line []byte) int {
 		}
 	}
 	return -1
+}
+
+// create a hash from bytes
+func hash(b []byte) uint64 {
+	limit := len(b)
+	if limit > 8 {
+		limit = 8
+	}
+
+	var x uint64
+	for i := 0; i < limit; i++ {
+		x = x<<8 + uint64(b[i])
+	}
+	return x
 }

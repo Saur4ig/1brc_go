@@ -9,6 +9,7 @@ type Result struct {
 	Min     float64
 	Max     float64
 	Sum     float64
+	Station string
 	Visited int
 }
 
